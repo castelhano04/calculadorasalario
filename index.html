@@ -1007,17 +1007,21 @@ cardLiquido.innerHTML = f(liq);
 
         relogio();
 
-        async function login(){
+       async function login(){
 
     try{
 
-        await auth.signInWithPopup(provider);
+        const resultado = await auth.signInWithPopup(provider);
+
+        console.log(resultado);
 
     }
 
     catch(e){
 
-        alert(e.message);
+        console.log(e);
+
+        alert(e.code);
 
     }
 
