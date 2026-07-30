@@ -10,7 +10,7 @@
         content="width=device-width,initial-scale=1"
     >
 
-    <title>Calculadora de Salário Pro</title>
+    <title>CASTELHANO FINANCE</title>
 
     <style>
 
@@ -330,6 +330,32 @@ grid-template-columns:1fr;
 
         }
 
+        .usuario{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.usuario img{
+
+    object-fit:cover;
+
+}
+
+.usuario button{
+
+    margin-top:6px;
+
+    padding:6px 12px;
+
+    font-size:13px;
+
+}
+
     </style>
 
 </head>
@@ -354,14 +380,42 @@ grid-template-columns:1fr;
 
         </div>
 
-        <div class="relogio">
+        <div class="usuario">
 
-            <h2 id="hora"></h2>
+    <img
+        id="fotoUsuario"
+        src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+        width="55"
+        height="55"
+        style="border-radius:50%;border:2px solid white;"
+    >
 
-            <span id="data"></span>
+    <div>
 
-        </div>
+        <strong id="nomeUsuario">
+            Não conectado
+        </strong>
 
+        <br>
+
+        <small id="emailUsuario">
+            Faça login
+        </small>
+
+        <br><br>
+
+        <button class="btn p" onclick="login()">
+            Entrar
+        </button>
+
+        <button class="btn w" onclick="sair()">
+            Sair
+        </button>
+
+    </div>
+
+</div>
+        
     </div>
 
 </div>
@@ -604,14 +658,22 @@ Nenhum cálculo salvo.
 
 </div>
 
- 
+
+    <!-- Firebase -->
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    
     <script>
 
       let historicoDados = [];
 
 let ultimoCalculo = null;
 
-      function salvar(){
+     async function salvar(){
 
     if(ultimoCalculo==null){
 
@@ -621,9 +683,75 @@ let ultimoCalculo = null;
 
     }
 
-    historicoDados.push(ultimoCalculo);
+    await db.collection("historico").add({
 
-    atualizarHistorico();
+        ...ultimoCalculo,
+
+        criadoEm:new Date()
+
+    });
+
+    alert("Registro salvo com sucesso!");
+
+}
+
+        async function carregarHistorico(){
+
+    historico.innerHTML="";
+
+    const dados = await db.collection("historico").get();
+
+    dados.forEach(doc=>{
+
+        let item=doc.data();
+
+        historico.innerHTML+=`
+
+        <tr>
+
+            <td>${item.mes}/${item.ano}</td>
+
+            <td>${f(item.salario)}</td>
+
+            <td>${item.horas50} h</td>
+
+            <td>${item.horas100} h</td>
+
+            <td>${f(item.extras)}</td>
+
+            <td>${f(item.bruto)}</td>
+
+            <td>${f(item.inss)}</td>
+
+            <td>${f(item.liquido)}</td>
+
+            <td>
+
+                <button onclick="excluir('${doc.id}')">
+
+                    🗑
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
+
+        async function excluir(id){
+
+    if(confirm("Deseja excluir este registro?")){
+
+        await db.collection("historico").doc(id).delete();
+
+        carregarHistorico();
+
+    }
 
 }
 
@@ -696,6 +824,39 @@ let ultimoCalculo = null;
     }
 
 }
+
+        // =========================
+// FIREBASE
+// =========================
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyA-g8hSxvo2SIy2BkTufclLA4TEmwTX-Xo",
+
+    authDomain: "calculadoradesalarios-2ece2.firebaseapp.com",
+
+    projectId: "calculadoradesalarios-2ece2",
+
+    storageBucket: "calculadoradesalarios-2ece2.firebasestorage.app",
+
+    messagingSenderId: "548127631582",
+
+    appId: "1:548127631582:web:cdbf73ee444c480e8dba4f",
+
+    measurementId: "G-RW448VWWLC"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+        const auth = firebase.auth();
+
+const provider = new firebase.auth.GoogleAuthProvider();
+
+let usuario = null;
+        
 
         function f(v) {
 
@@ -844,6 +1005,39 @@ cardLiquido.innerHTML = f(liq);
         setInterval(relogio, 1000);
 
         relogio();
+
+        carregarHistorico();
+
+        async function login(){
+
+    try{
+
+        const resultado = await auth.signInWithPopup(provider);
+
+        usuario = resultado.user;
+
+        document.getElementById("nomeUsuario").innerHTML = usuario.displayName;
+
+        document.getElementById("fotoUsuario").src = usuario.photoURL;
+
+        carregarHistorico();
+
+    }
+
+    catch(e){
+
+        alert(e.message);
+
+    }
+
+}
+        async function sair(){
+
+    await auth.signOut();
+
+    location.reload();
+
+}
 
     </script>
 
