@@ -711,9 +711,10 @@ let ultimoCalculo = null;
 
     historico.innerHTML="";
 
-    const dados = awaitdb.collection("historico")
-.where("uid","==",usuario.uid)
-.get();
+  const dados = await db
+    .collection("historico")
+    .where("uid", "==", usuario.uid)
+    .get();
 
     dados.forEach(doc=>{
 
