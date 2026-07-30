@@ -172,37 +172,155 @@
             font-weight: 800;
         }
 
-      table{
+     /* HISTÓRICO */
 
-width:100%;
+#historico{
 
-border-collapse:collapse;
+    display:flex;
 
-margin-top:20px;
+    flex-direction:column;
 
-}
+    gap:20px;
 
-th{
-
-padding:15px;
-
-background:#2563eb;
-
-color:white;
+    margin-top:25px;
 
 }
 
-td{
+.cardHistorico{
 
-padding:12px;
+    background:white;
 
-border-bottom:1px solid #ddd;
+    border-radius:18px;
+
+    padding:22px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.12);
+
+    transition:.3s;
+
+    border-left:6px solid #2563eb;
 
 }
 
-tr:hover{
+.cardHistorico:hover{
 
-background:#f3f7ff;
+    transform:translateY(-5px);
+
+}
+
+.topoHistorico{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:18px;
+
+}
+
+.topoHistorico h3{
+
+    margin:0;
+
+    color:#2563eb;
+
+}
+
+.gridHistorico{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:15px;
+
+}
+
+.info{
+
+    background:#f8fafc;
+
+    padding:12px;
+
+    border-radius:10px;
+
+}
+
+.info span{
+
+    display:block;
+
+    color:#777;
+
+    font-size:13px;
+
+}
+
+.info strong{
+
+    font-size:18px;
+
+}
+
+.liquido{
+
+    background:#16a34a;
+
+    color:white;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+    margin-top:18px;
+
+}
+
+.liquido h2{
+
+    margin:5px 0 0;
+
+}
+
+.btnExcluir{
+
+    margin-top:18px;
+
+    width:100%;
+
+    background:#dc2626;
+
+    color:white;
+
+    border:none;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+}
+
+.btnExcluir:hover{
+
+    background:#b91c1c;
+
+}
+
+@media(max-width:700px){
+
+.gridHistorico{
+
+grid-template-columns:1fr;
+
+}
 
 }
 
@@ -597,71 +715,57 @@ grid-template-columns:1fr;
 
     </div>
 
-  <hr style="margin:0;">
+ <hr style="margin:0;">
 
 <div style="padding:30px;">
 
-    <h2 style="margin-top:0;">
-        📅 Histórico de Pagamentos
-    </h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
 
-    <table
-        style="
-        width:100%;
-        border-collapse:collapse;
-        text-align:center;
-        "
-    >
+        <div>
 
-        <thead>
+            <h2 style="margin:0;">
+                📅 Histórico Financeiro
+            </h2>
 
-            <tr
-                style="
-                background:#2563eb;
-                color:white;
-                "
+            <p style="margin-top:8px;color:#666;">
+                Todos os cálculos salvos na sua conta.
+            </p>
+
+        </div>
+
+        <div>
+
+            <input
+                id="pesquisaHistorico"
+                type="text"
+                placeholder="Pesquisar mês..."
+                onkeyup="filtrarHistorico()"
+                style="width:250px;"
             >
 
-                <th style="padding:12px;">Mês</th>
+        </div>
 
-                <th>Base</th>
+    </div>
 
-                <th>HE 50</th>
+    <div id="historico">
 
-                <th>HE 100</th>
+        <div
+            style="
+            text-align:center;
+            color:#777;
+            padding:40px;
+            background:white;
+            border-radius:15px;
+            "
+        >
 
-                <th>Extras</th>
+            Nenhum pagamento encontrado.
 
-                <th>Bruto</th>
+        </div>
 
-                <th>INSS</th>
-
-                <th>Líquido</th>
-
-                <th>Ações</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody id="historico">
-
-<tr>
-
-<td colspan="9" style="padding:20px;color:#888;">
-
-Nenhum cálculo salvo.
-
-</td>
-
-</tr>
-
-</tbody>
-
-    </table>
+    </div>
 
 </div>
-
 
     <!-- Firebase -->
 
