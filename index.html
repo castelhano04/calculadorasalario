@@ -1141,18 +1141,13 @@ auth.onAuthStateChanged(async (user) => {
         btnSair.style.display = "none";
 
         historico.innerHTML = `
-            <tr>
-                <td colspan="9">
-                    Faça login para visualizar seu histórico.
-                </td>
-            </tr>
-       `;
-
-    }
-
-});
+    <div class="cardHistorico">
+        <p style="text-align:center;">
+            Faça login para visualizar seu histórico.
+        </p>
+    </div>
+`;
         
-
         function f(v) {
 
             return v.toLocaleString(
