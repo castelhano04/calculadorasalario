@@ -987,16 +987,16 @@ let ultimoCalculo = null;
 
     historico.innerHTML = "";
 
-  const dados = await db.collection("historico")
-.where("uid", "==", usuario.uid)
-.orderBy("criadoEm", "desc")
-.get();
+    const dados = await db.collection("historico")
+        .where("uid", "==", usuario.uid)
+        .orderBy("criadoEm", "desc")
+        .get();
 
-    dados.forEach(doc=>{
+    dados.forEach(doc => {
 
-        let item=doc.data();
+        let item = doc.data();
 
-        historico.innerHTML+=`
+        historico.innerHTML += `
 
 <div class="cardHistorico">
 
@@ -1008,7 +1008,6 @@ let ultimoCalculo = null;
 
     </div>
 
-
     <div class="dadosHistorico">
 
         <div class="itemHistorico">
@@ -1016,18 +1015,15 @@ let ultimoCalculo = null;
             <strong>${f(item.salario)}</strong>
         </div>
 
-
         <div class="itemHistorico">
             <span>Horas Extras</span>
             <strong>${f(item.extras)}</strong>
         </div>
 
-
         <div class="itemHistorico">
             <span>Salário Bruto</span>
             <strong>${f(item.bruto)}</strong>
         </div>
-
 
         <div class="itemHistorico">
             <span>INSS</span>
@@ -1036,32 +1032,29 @@ let ultimoCalculo = null;
 
     </div>
 
-
     <div class="liquidoHistorico">
 
         <small>Salário Líquido</small>
 
-        <h2>
-            ${f(item.liquido)}
-        </h2>
+        <h2>${f(item.liquido)}</h2>
 
     </div>
 
-
     <button 
-    class="btnExcluir"
-    onclick="excluir('${doc.id}')">
+        class="btnExcluir"
+        onclick="excluir('${doc.id}')">
 
         🗑 Excluir registro
 
     </button>
 
-
 </div>
 
-});
-}
+`;
 
+    });
+
+}
         async function excluir(id){
 
     if(confirm("Deseja excluir este registro?")){
