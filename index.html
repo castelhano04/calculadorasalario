@@ -372,9 +372,9 @@ grid-template-columns:1fr;
 
         <div>
 
-            <h1>CASTELHANO PAYROLL</h1>
+           <h1>CASTELHANO FINANCE</h1>
 
-            <p>Sistema Inteligente de Controle de Salários</p>
+<p>Sistema Inteligente de Gestão Financeira</p>
 
             <small>BY CASTELHANO</small>
 
@@ -683,14 +683,22 @@ let ultimoCalculo = null;
 
     }
 
-    await db.collection("historico").add({
+   await db.collection("historico").add({
 
-        ...ultimoCalculo,
+    uid:usuario.uid,
 
-        criadoEm:new Date()
+    nome:usuario.displayName,
 
-    });
+    email:usuario.email,
 
+    foto:usuario.photoURL,
+
+    ...ultimoCalculo,
+
+    criadoEm:new Date()
+
+});
+         
     alert("Registro salvo com sucesso!");
 
 }
@@ -699,7 +707,9 @@ let ultimoCalculo = null;
 
     historico.innerHTML="";
 
-    const dados = await db.collection("historico").get();
+    const dados = awaitdb.collection("historico")
+.where("uid","==",usuario.uid)
+.get();
 
     dados.forEach(doc=>{
 
@@ -1012,7 +1022,7 @@ cardLiquido.innerHTML = f(liq);
 
     try{
 
-        const resultado = await auth.signInWithPopup(provider);
+        const resultado = await auth.signInWithRedirect(provider);
 
         usuario = resultado.user;
 
