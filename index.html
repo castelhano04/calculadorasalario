@@ -848,7 +848,7 @@ grid-template-columns:1fr;
 
 let ultimoCalculo = null;
 
-    async function salvar(){
+   async function salvar(){
 
     if(!usuario){
         alert("Faça login primeiro.");
@@ -860,9 +860,12 @@ let ultimoCalculo = null;
         return;
     }
 
+    console.log("Usuário:", usuario);
+    console.log("Último cálculo:", ultimoCalculo);
+
     try{
 
-        await db.collection("historico").add({
+        const doc = await db.collection("historico").add({
 
             uid: usuario.uid,
             nome: usuario.displayName,
@@ -884,13 +887,15 @@ let ultimoCalculo = null;
 
         });
 
-        alert("Registro salvo com sucesso!");
+        console.log("Documento salvo:", doc.id);
+
+        alert("Registro salvo!");
 
         carregarHistorico();
 
     }catch(e){
 
-        console.log(e);
+        console.error(e);
 
         alert(e.message);
 
