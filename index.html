@@ -1007,33 +1007,31 @@ cardLiquido.innerHTML = f(liq);
 
         relogio();
 
-       async function login(){
+      async function login(){
 
     try{
 
+        console.log("Iniciando login...");
+
         const resultado = await auth.signInWithPopup(provider);
 
-        console.log(resultado);
+        console.log("Login realizado:", resultado.user);
 
     }
 
     catch(e){
 
+        console.log("Código:", e.code);
+
+        console.log("Mensagem:", e.message);
+
         console.log(e);
 
-        alert(e.code);
+        alert(e.code + "\n\n" + e.message);
 
     }
 
 }
-        async function sair(){
-
-    await auth.signOut();
-
-    location.reload();
-
-}
-
     </script>
 
 </body>
