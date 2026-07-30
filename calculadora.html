@@ -1,31 +1,852 @@
-<!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Calculadora de Salário</title>
-<style>
-body{font-family:Arial;background:#f4f4f4;padding:20px} .box{max-width:700px;margin:auto;background:#fff;padding:20px;border-radius:8px}
-label{display:block;margin-top:10px} input,select,button{width:100%;padding:8px;margin-top:4px}
-table{width:100%;margin-top:20px;border-collapse:collapse}td{border:1px solid #ccc;padding:6px}
-.buttons{display:flex;gap:10px;margin-top:15px}.buttons button{flex:1}
-</style></head><body><div class="box"><h2>Calculadora de Salário</h2>
-<label>Salário Bruto<input id=sal type=number step=0.01></label>
-<label>Carga Horária<select id=carga onchange="cust()"><option>220</option><option>200</option><option>180</option><option>150</option><option value=0>Personalizada</option></select></label>
-<input id=custom type=number placeholder="Carga personalizada" style="display:none">
-<label>Horas 50%<input id=h50 type=number step=0.01></label>
-<label>Horas 100%<input id=h100 type=number step=0.01></label>
-<div class=buttons><button onclick="calc()">Calcular</button><button onclick="limpar()">Limpar</button><button onclick="editar()">Editar</button></div>
-<table><tbody id=res></tbody></table></div>
-<script>
-function cust(){custom.style.display=carga.value==0?'block':'none';}
-function inss(b){let f=[[1518,.075],[2793.88,.09],[4190.83,.12],[8157.41,.14]],i=0,a=0;for(let x of f){let t=Math.min(b,x[0])-i;if(t>0)a+=t*x[1];i=x[0];if(b<=x[0])break;}return a;}
-function fmt(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
-function calc(){
-let s=+sal.value,h=+h50.value,z=+h100.value,ch=(+carga.value)||(+custom.value);
-let vh=s/ch,v50=vh*1.5,v100=vh*2,t50=h*v50,t100=z*v100,extra=t50+t100,br=s+extra,ins=inss(br),liq=br-ins;
-res.innerHTML='';
-[['Valor Hora',vh],['Hora 50%',v50],['Total 50%',t50],['Hora 100%',v100],['Total 100%',t100],['Total Extras',extra],['Bruto c/ Extras',br],['INSS',ins],['Líquido',liq]].forEach(r=>res.innerHTML+=`<tr><td>${r[0]}</td><td>${fmt(r[1])}</td></tr>`);
-document.querySelectorAll('input,select').forEach(e=>e.disabled=true);
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,initial-scale=1"
+    >
+
+    <title>Calculadora de Salário Pro</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Segoe UI, Arial;
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            color: #222;
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+            overflow: hidden;
+        }
+
+        .header{
+
+    padding:30px;
+
+    background:linear-gradient(135deg,#2563eb,#0ea5e9);
+
+    color:white;
+
 }
-function limpar(){document.querySelectorAll('input').forEach(i=>{i.value='';i.disabled=false});document.querySelectorAll('select').forEach(s=>s.disabled=false);res.innerHTML='';cust();}
-function editar(){document.querySelectorAll('input,select').forEach(e=>e.disabled=false);}
-cust();
-</script></body></html>
+
+.topo{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:20px;
+
+}
+
+.topo h1{
+
+    margin:0;
+
+    font-size:34px;
+
+    font-weight:700;
+
+}
+
+.topo p{
+
+    margin:8px 0;
+
+    opacity:.9;
+
+}
+
+.relogio{
+
+    text-align:right;
+
+}
+
+.relogio h2{
+
+    margin:0;
+
+    font-size:30px;
+
+}
+
+.relogio span{
+
+    font-size:15px;
+
+}
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            padding: 30px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            margin-top: 6px;
+        }
+
+        .btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .p {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .s {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .w {
+            background: #f59e0b;
+            color: #fff;
+        }
+
+        .res {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .row:last-child {
+            border: 0;
+        }
+
+        .big {
+            font-size: 28px;
+            color: #2563eb;
+            font-weight: 800;
+        }
+
+      table{
+
+width:100%;
+
+border-collapse:collapse;
+
+margin-top:20px;
+
+}
+
+th{
+
+padding:15px;
+
+background:#2563eb;
+
+color:white;
+
+}
+
+td{
+
+padding:12px;
+
+border-bottom:1px solid #ddd;
+
+}
+
+tr:hover{
+
+background:#f3f7ff;
+
+}
+
+      /* ===== DASHBOARD ===== */
+
+.dashboard{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:20px;
+
+    padding:25px;
+
+    background:#f3f8ff;
+
+    border-bottom:1px solid #ddd;
+
+}
+
+.cardInfo{
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:16px;
+
+    box-shadow:0 8px 18px rgba(0,0,0,.12);
+
+    transition:.3s;
+
+}
+
+.cardInfo:hover{
+
+    transform:translateY(-6px);
+
+}
+
+.cardInfo h4{
+
+    margin:0;
+
+    color:#666;
+
+}
+
+.cardInfo h2{
+
+    margin-top:15px;
+
+    color:#2563eb;
+
+    font-size:30px;
+
+}
+
+@media(max-width:1000px){
+
+.dashboard{
+
+grid-template-columns:1fr 1fr;
+
+}
+
+}
+
+@media(max-width:700px){
+
+.dashboard{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+.cardInfo{
+    background:#fff;
+    border-radius:15px;
+    padding:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
+    transition:.3s;
+}
+
+.cardInfo:hover{
+    transform:translateY(-6px);
+}
+
+.cardInfo h4{
+    margin:0;
+    color:#666;
+    font-size:15px;
+}
+
+.cardInfo h2{
+    margin:10px 0 0;
+    color:#2563eb;
+    font-size:28px;
+}
+
+@media(max-width:900px){
+
+.dashboard{
+grid-template-columns:1fr 1fr;
+}
+
+}
+
+@media(max-width:600px){
+
+.dashboard{
+grid-template-columns:1fr;
+}
+
+}
+
+        @media(max-width:800px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="wrap">
+
+        <div class="card">
+
+            <div class="header">
+
+    <div class="topo">
+
+        <div>
+
+            <h1>CASTELHANO PAYROLL</h1>
+
+            <p>Sistema Inteligente de Controle de Salários</p>
+
+            <small>BY CASTELHANO</small>
+
+        </div>
+
+        <div class="relogio">
+
+            <h2 id="hora"></h2>
+
+            <span id="data"></span>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="dashboard">
+
+    <div class="cardInfo">
+
+        <h4>💰 Salário Base</h4>
+
+        <h2 id="cardSalario">
+            R$ 0,00
+        </h2>
+
+    </div>
+
+    <div class="cardInfo">
+
+        <h4>📈 Horas Extras</h4>
+
+        <h2 id="cardExtras">
+            R$ 0,00
+        </h2>
+
+    </div>
+
+    <div class="cardInfo">
+
+        <h4>🧾 INSS</h4>
+
+        <h2 id="cardINSS">
+            R$ 0,00
+        </h2>
+
+    </div>
+
+    <div class="cardInfo">
+
+        <h4>💵 Salário Líquido</h4>
+
+        <h2 id="cardLiquido">
+            R$ 0,00
+        </h2>
+
+    </div>
+
+</div>
+
+<div class="grid">
+  
+                <div>
+
+                    <label>Salário Bruto</label>
+
+                    <input
+                        id="s"
+                        type="number"
+                    >
+
+                    <label>Mês</label>
+
+                    <select id="mes">
+
+                        <option>Janeiro</option>
+                        <option>Fevereiro</option>
+                        <option>Março</option>
+                        <option>Abril</option>
+                        <option>Maio</option>
+                        <option>Junho</option>
+                        <option>Julho</option>
+                        <option>Agosto</option>
+                        <option>Setembro</option>
+                        <option>Outubro</option>
+                        <option>Novembro</option>
+                        <option>Dezembro</option>
+
+                    </select>
+
+                    <label>Ano</label>
+
+                    <input
+                        id="ano"
+                        type="number"
+                        value="2026"
+                    >
+
+                    <label>Carga Horária</label>
+
+                    <select
+                        id="c"
+                        onchange="p.style.display=this.value==0?'block':'none'"
+                    >
+
+                        <option>220</option>
+                        <option>200</option>
+                        <option>180</option>
+                        <option>150</option>
+                        <option value="0">Personalizada</option>
+
+                    </select>
+
+                    <input
+                        id="p"
+                        type="number"
+                        placeholder="Carga personalizada"
+                        style="display:none;margin-top:10px"
+                    >
+
+                    <label>Horas Extras 50%</label>
+
+                    <input
+                        id="h50"
+                        type="number"
+                    >
+
+                    <label>Horas Extras 100%</label>
+
+                    <input
+                        id="h100"
+                        type="number"
+                    >
+
+                    <div class="btns">
+
+                        <button
+                            class="btn p"
+                            onclick="calc()"
+                        >
+                            Calcular
+                        </button>
+
+                        <button
+                            class="btn s"
+                            onclick="salvar()"
+                        >
+                            Salvar
+                        </button>
+
+                        <button
+                            class="btn s"
+                            onclick="edit()"
+                        >
+                            Editar
+                        </button>
+
+                        <button
+                            class="btn w"
+                            onclick="clr()"
+                        >
+                            Limpar
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="res"
+                    id="r"
+                >
+
+                    <div class="big">
+                        R$ 0,00
+                    </div>
+
+                    <p>
+                        Preencha os campos e clique em Calcular.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+  <hr style="margin:0;">
+
+<div style="padding:30px;">
+
+    <h2 style="margin-top:0;">
+        📅 Histórico de Pagamentos
+    </h2>
+
+    <table
+        style="
+        width:100%;
+        border-collapse:collapse;
+        text-align:center;
+        "
+    >
+
+        <thead>
+
+            <tr
+                style="
+                background:#2563eb;
+                color:white;
+                "
+            >
+
+                <th style="padding:12px;">Mês</th>
+
+                <th>Base</th>
+
+                <th>HE 50</th>
+
+                <th>HE 100</th>
+
+                <th>Extras</th>
+
+                <th>Bruto</th>
+
+                <th>INSS</th>
+
+                <th>Líquido</th>
+
+                <th>Ações</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="historico">
+
+<tr>
+
+<td colspan="9" style="padding:20px;color:#888;">
+
+Nenhum cálculo salvo.
+
+</td>
+
+</tr>
+
+</tbody>
+
+    </table>
+
+</div>
+
+ 
+    <script>
+
+      let historicoDados = [];
+
+let ultimoCalculo = null;
+
+      function salvar(){
+
+    if(ultimoCalculo==null){
+
+        alert("Faça um cálculo primeiro.");
+
+        return;
+
+    }
+
+    historicoDados.push(ultimoCalculo);
+
+    atualizarHistorico();
+
+}
+
+     function atualizarHistorico(){
+
+    historico.innerHTML="";
+
+    historicoDados.forEach((item,index)=>{
+
+        historico.innerHTML+=`
+
+        <tr>
+
+            <td>${item.mes}/${item.ano}</td>
+
+            <td>${f(item.salario)}</td>
+
+            <td>${item.horas50} h</td>
+
+            <td>${item.horas100} h</td>
+
+            <td>${f(item.extras)}</td>
+
+            <td>${f(item.bruto)}</td>
+
+            <td style="color:#dc2626;">
+                ${f(item.inss)}
+            </td>
+
+            <td style="color:#16a34a;font-weight:bold;">
+                ${f(item.liquido)}
+            </td>
+
+            <td>
+
+                <button
+                    onclick="remover(${index})"
+                    style="
+                    background:#dc2626;
+                    color:white;
+                    border:none;
+                    padding:8px 12px;
+                    border-radius:8px;
+                    cursor:pointer;
+                    "
+                >
+
+                    🗑
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
+
+      function remover(indice){
+
+    if(confirm("Excluir este registro?")){
+
+        historicoDados.splice(indice,1);
+
+        atualizarHistorico();
+
+    }
+
+}
+
+        function f(v) {
+
+            return v.toLocaleString(
+                'pt-BR',
+                {
+                    style: 'currency',
+                    currency: 'BRL'
+                }
+            );
+
+        }
+
+        function inss(b) {
+
+            let F = [
+                [1518, .075],
+                [2793.88, .09],
+                [4190.83, .12],
+                [8157.41, .14]
+            ];
+
+            let i = 0;
+            let a = 0;
+
+            for (let x of F) {
+
+                let t = Math.min(b, x[0]) - i;
+
+                if (t > 0)
+                    a += t * x[1];
+
+                i = x[0];
+
+                if (b <= x[0])
+                    break;
+
+            }
+
+            return a;
+
+        }
+
+        function calc() {
+
+            let sal = +s.value;
+            let ch = (+c.value) || (+p.value);
+
+            let a = +h50.value;
+            let b = +h100.value;
+
+            let v = sal / ch;
+
+            let e50 = v * 1.5;
+            let e100 = v * 2;
+
+            let t50 = e50 * a;
+            let t100 = e100 * b;
+
+            let ext = t50 + t100;
+
+            let br = sal + ext;
+
+            let ins = inss(br);
+
+            let liq = br - ins;
+
+          ultimoCalculo = {
+
+    mes: mes.value,
+
+    ano: ano.value,
+
+    salario: sal,
+
+    horas50: a,
+
+    horas100: b,
+
+    extras: ext,
+
+    bruto: br,
+
+    inss: ins,
+
+    liquido: liq
+
+};
+
+          cardSalario.innerHTML = f(sal);
+
+cardExtras.innerHTML = f(ext);
+
+cardINSS.innerHTML = f(ins);
+
+cardLiquido.innerHTML = f(liq);
+
+            r.innerHTML = `
+                <div class="big">${f(liq)}</div>
+
+                <div class="row"><span>Valor Hora</span><b>${f(v)}</b></div>
+
+                <div class="row"><span>Total HE 50%</span><b>${f(t50)}</b></div>
+
+                <div class="row"><span>Total HE 100%</span><b>${f(t100)}</b></div>
+
+                <div class="row"><span>Total Horas Extras</span><b>${f(ext)}</b></div>
+
+                <div class="row"><span>Salário Bruto</span><b>${f(br)}</b></div>
+
+                <div class="row"><span>INSS</span><b>${f(ins)}</b></div>
+
+                <div class="row"><span>Salário Líquido</span><b>${f(liq)}</b></div>
+            `;
+
+            document
+                .querySelectorAll("input,select")
+                .forEach(x => x.disabled = true);
+
+        }
+
+        function edit() {
+
+            document
+                .querySelectorAll("input,select")
+                .forEach(x => x.disabled = false);
+
+        }
+
+        function clr() {
+
+            location.reload();
+
+        }
+
+        function relogio() {
+
+            let agora = new Date();
+
+            hora.innerHTML = agora.toLocaleTimeString("pt-BR");
+
+            data.innerHTML = agora.toLocaleDateString("pt-BR");
+
+        }
+
+        setInterval(relogio, 1000);
+
+        relogio();
+
+    </script>
+
+</body>
+
+</html>
