@@ -764,8 +764,6 @@ let ultimoCalculo = null;
 
         await db.collection("historico").doc(id).delete();
 
-        carregarHistorico();
-
     }
 
 }
@@ -1029,14 +1027,14 @@ cardLiquido.innerHTML = f(liq);
 
         const resultado = await auth.signInWithRedirect(provider);
 
-        usuario = resultado.user;
+      usuario = resultado.user;
 
-        document.getElementById("nomeUsuario").innerHTML = usuario.displayName;
+nomeUsuario.innerHTML = usuario.displayName;
+emailUsuario.innerHTML = usuario.email;
+fotoUsuario.src = usuario.photoURL;
 
-        document.getElementById("fotoUsuario").src = usuario.photoURL;
-
-        carregarHistorico();
-
+carregarHistorico();
+        
     }
 
     catch(e){
