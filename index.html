@@ -408,11 +408,11 @@ grid-template-columns:1fr;
 
         <br><br>
 
-        <button id="btnLogin" class="btn p" onclick="login()">
+        <button id="btnEntrar" class="btn p" onclick="login()">
             Entrar
         </button>
 
-        <button class="btn w" onclick="sair()">
+        <button id="btnSair" class="btn w" onclick="sair()" style="display:none;">
             Sair
         </button>
 
@@ -831,7 +831,7 @@ let usuario = null;
 
 auth.onAuthStateChanged(async (user) => {
 
-    if (user) {
+    if(user){
 
         usuario = user;
 
@@ -841,9 +841,12 @@ auth.onAuthStateChanged(async (user) => {
 
         fotoUsuario.src = user.photoURL;
 
+        btnEntrar.style.display = "none";
+        btnSair.style.display = "inline-block";
+
         await carregarHistorico();
 
-    } else {
+    }else{
 
         usuario = null;
 
@@ -853,13 +856,17 @@ auth.onAuthStateChanged(async (user) => {
 
         fotoUsuario.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
+        btnEntrar.style.display = "inline-block";
+        btnSair.style.display = "none";
+
         historico.innerHTML = `
             <tr>
-                <td colspan="9" style="padding:20px;">
+                <td colspan="9">
                     Faça login para visualizar seu histórico.
                 </td>
             </tr>
-        `;
+        ;
+
     }
 
 });
@@ -993,12 +1000,6 @@ cardLiquido.innerHTML = f(liq);
 
         }
 
-        function clr() {
-
-            location.reload();
-
-        }
-
         function relogio() {
 
             let agora = new Date();
@@ -1048,6 +1049,25 @@ async function login(){
     }
 
 }
+
+        async function sair(){
+
+    try{
+
+        await auth.signOut();
+
+        usuario = null;
+
+    }
+
+    catch(e){
+
+        console.log(e);
+
+    }
+
+}
+        
         
     </script>
 
