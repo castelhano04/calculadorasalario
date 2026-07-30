@@ -734,9 +734,6 @@ let ultimoCalculo = null;
 
     historico.innerHTML = "";
 
-    // resto da função...
-}
-
   const dados = await db.collection("historico")
 .where("uid", "==", usuario.uid)
 .orderBy("criadoEm", "desc")
