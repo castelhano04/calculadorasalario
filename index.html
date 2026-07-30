@@ -1134,25 +1134,29 @@ auth.onAuthStateChanged(async (user) => {
         btnSair.style.display = "none";
 
         historico.innerHTML = `
-    <div class="cardHistorico">
-        <p style="text-align:center;">
-            Faça login para visualizar seu histórico.
-        </p>
-    </div>
-`;
-        
-        function f(v) {
+            <div class="cardHistorico">
+                <p style="text-align:center;">
+                    Faça login para visualizar seu histórico.
+                </p>
+            </div>
+        `;
 
-            return v.toLocaleString(
-                'pt-BR',
-                {
-                    style: 'currency',
-                    currency: 'BRL'
-                }
-            );
+    }
 
+});  // <-- fecha o auth aqui
+
+
+function f(v) {
+
+    return v.toLocaleString(
+        'pt-BR',
+        {
+            style: 'currency',
+            currency: 'BRL'
         }
+    );
 
+}
         function inss(b) {
 
             let F = [
