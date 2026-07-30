@@ -673,11 +673,18 @@ Nenhum cálculo salvo.
     
     <script>
 
-      let historicoDados = [];
 
 let ultimoCalculo = null;
 
      async function salvar(){
+
+          if(!usuario){
+
+    alert("Faça login primeiro.");
+
+    return;
+
+}
 
     if(ultimoCalculo==null){
 
@@ -687,19 +694,33 @@ let ultimoCalculo = null;
 
     }
 
-   await db.collection("historico").add({
+           await db.collection("historico").add({
 
-    uid:usuario.uid,
+    uid: usuario.uid,
 
-    nome:usuario.displayName,
+    nome: usuario.displayName,
 
-    email:usuario.email,
+    email: usuario.email,
 
-    foto:usuario.photoURL,
+    salario: ultimoCalculo.salario,
 
-    ...ultimoCalculo,
+    horas50: ultimoCalculo.horas50,
 
-    criadoEm:new Date()
+    horas100: ultimoCalculo.horas100,
+
+    extras: ultimoCalculo.extras,
+
+    bruto: ultimoCalculo.bruto,
+
+    inss: ultimoCalculo.inss,
+
+    liquido: ultimoCalculo.liquido,
+
+    mes: ultimoCalculo.mes,
+
+    ano: ultimoCalculo.ano,
+
+    criadoEm: firebase.firestore.FieldValue.serverTimestamp()
 
 });
          
@@ -707,14 +728,19 @@ let ultimoCalculo = null;
 
 }
 
-        async function carregarHistorico(){
+        async function carregarHistorico() {
 
-    historico.innerHTML="";
+    if (!usuario) return;
 
-  const dados = await db
-    .collection("historico")
-    .where("uid", "==", usuario.uid)
-    .get();
+    historico.innerHTML = "";
+
+    // resto da função...
+}
+
+  const dados = await db.collection("historico")
+.where("uid", "==", usuario.uid)
+.orderBy("criadoEm", "desc")
+.get();
 
     dados.forEach(doc=>{
 
@@ -768,76 +794,6 @@ let ultimoCalculo = null;
 
 }
 
-     function atualizarHistorico(){
-
-    historico.innerHTML="";
-
-    historicoDados.forEach((item,index)=>{
-
-        historico.innerHTML+=`
-
-        <tr>
-
-            <td>${item.mes}/${item.ano}</td>
-
-            <td>${f(item.salario)}</td>
-
-            <td>${item.horas50} h</td>
-
-            <td>${item.horas100} h</td>
-
-            <td>${f(item.extras)}</td>
-
-            <td>${f(item.bruto)}</td>
-
-            <td style="color:#dc2626;">
-                ${f(item.inss)}
-            </td>
-
-            <td style="color:#16a34a;font-weight:bold;">
-                ${f(item.liquido)}
-            </td>
-
-            <td>
-
-                <button
-                    onclick="remover(${index})"
-                    style="
-                    background:#dc2626;
-                    color:white;
-                    border:none;
-                    padding:8px 12px;
-                    border-radius:8px;
-                    cursor:pointer;
-                    "
-                >
-
-                    🗑
-
-                </button>
-
-            </td>
-
-        </tr>
-
-        `;
-
-    });
-
-}
-
-      function remover(indice){
-
-    if(confirm("Excluir este registro?")){
-
-        historicoDados.splice(indice,1);
-
-        atualizarHistorico();
-
-    }
-
-}
-
         // =========================
 // FIREBASE
 // =========================
@@ -869,6 +825,41 @@ const db = firebase.firestore();
 const provider = new firebase.auth.GoogleAuthProvider();
 
 let usuario = null;
+
+auth.onAuthStateChanged(async (user) => {
+
+    if (user) {
+
+        usuario = user;
+
+        nomeUsuario.innerHTML = user.displayName;
+
+        emailUsuario.innerHTML = user.email;
+
+        fotoUsuario.src = user.photoURL;
+
+        await carregarHistorico();
+
+    } else {
+
+        usuario = null;
+
+        nomeUsuario.innerHTML = "Não conectado";
+
+        emailUsuario.innerHTML = "Faça login";
+
+        fotoUsuario.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        historico.innerHTML = `
+            <tr>
+                <td colspan="9" style="padding:20px;">
+                    Faça login para visualizar seu histórico.
+                </td>
+            </tr>
+        `;
+    }
+
+});
         
 
         function f(v) {
@@ -1019,22 +1010,12 @@ cardLiquido.innerHTML = f(liq);
 
         relogio();
 
-        carregarHistorico();
-
         async function login(){
 
     try{
 
-        const resultado = await auth.signInWithRedirect(provider);
+        await auth.signInWithPopup(provider);
 
-      usuario = resultado.user;
-
-nomeUsuario.innerHTML = usuario.displayName;
-emailUsuario.innerHTML = usuario.email;
-fotoUsuario.src = usuario.photoURL;
-
-carregarHistorico();
-        
     }
 
     catch(e){
