@@ -299,25 +299,43 @@ select:focus{
 
 .info{
 
-    background:#f5f5f5;
+    background:#ffffff;
 
-    color:#000;
+    border:1px solid #e5e7eb;
+
+    border-radius:14px;
+
+    padding:18px;
+
+    transition:.25s;
+
+}
+
+.info:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
 
 }
 
 .info span{
 
-    color:#555;
+    display:block;
 
-    font-weight:600;
+    color:#6b7280;
+
+    font-size:13px;
+
+    margin-bottom:8px;
 
 }
 
 .info strong{
 
-    font-size:18px;
+    font-size:22px;
 
-    color:#000;
+    color:#111827;
 
 }
         
@@ -830,53 +848,55 @@ grid-template-columns:1fr;
 
 let ultimoCalculo = null;
 
-     async function salvar(){
+    async function salvar(){
 
-          if(!usuario){
-
-    alert("Faça login primeiro.");
-
-    return;
-
-}
-
-    if(ultimoCalculo==null){
-
-        alert("Faça um cálculo primeiro.");
-
+    if(!usuario){
+        alert("Faça login primeiro.");
         return;
+    }
+
+    if(ultimoCalculo == null){
+        alert("Faça um cálculo primeiro.");
+        return;
+    }
+
+    try{
+
+        await db.collection("historico").add({
+
+            uid: usuario.uid,
+            nome: usuario.displayName,
+            email: usuario.email,
+
+            salario: ultimoCalculo.salario,
+            horas50: ultimoCalculo.horas50,
+            horas100: ultimoCalculo.horas100,
+
+            extras: ultimoCalculo.extras,
+            bruto: ultimoCalculo.bruto,
+            inss: ultimoCalculo.inss,
+            liquido: ultimoCalculo.liquido,
+
+            mes: ultimoCalculo.mes,
+            ano: ultimoCalculo.ano,
+
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+
+        });
+
+        alert("Registro salvo com sucesso!");
+
+        carregarHistorico();
+
+    }catch(e){
+
+        console.log(e);
+
+        alert(e.message);
 
     }
 
-           await db.collection("historico").add({
-
-    uid: usuario.uid,
-
-    nome: usuario.displayName,
-
-    email: usuario.email,
-
-    salario: ultimoCalculo.salario,
-
-    horas50: ultimoCalculo.horas50,
-
-    horas100: ultimoCalculo.horas100,
-
-    extras: ultimoCalculo.extras,
-
-    bruto: ultimoCalculo.bruto,
-
-    inss: ultimoCalculo.inss,
-
-    liquido: ultimoCalculo.liquido,
-
-    mes: ultimoCalculo.mes,
-
-    ano: ultimoCalculo.ano,
-
-    criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-
-});
+}
          
     alert("Registro salvo com sucesso!");
 
@@ -1123,28 +1143,81 @@ cardINSS.innerHTML = f(ins);
 cardLiquido.innerHTML = f(liq);
 
             r.innerHTML = `
-                <div class="big">${f(liq)}</div>
 
-                <div class="row"><span>Valor Hora</span><b>${f(v)}</b></div>
+<div style="
+background:#2563eb;
+color:white;
+padding:30px;
+border-radius:18px;
+text-align:center;
+margin-bottom:25px;
+">
 
-                <div class="row"><span>Total HE 50%</span><b>${f(t50)}</b></div>
+    <div style="font-size:16px;opacity:.9;">
+        SALÁRIO LÍQUIDO
+    </div>
 
-                <div class="row"><span>Total HE 100%</span><b>${f(t100)}</b></div>
+    <div style="
+    font-size:42px;
+    font-weight:bold;
+    margin-top:10px;
+    ">
+        ${f(liq)}
+    </div>
 
-                <div class="row"><span>Total Horas Extras</span><b>${f(ext)}</b></div>
+</div>
 
-                <div class="row"><span>Salário Bruto</span><b>${f(br)}</b></div>
+<div style="
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+">
 
-                <div class="row"><span>INSS</span><b>${f(ins)}</b></div>
+<div class="info">
+<span>💰 Salário Base</span>
+<strong>${f(sal)}</strong>
+</div>
 
-                <div class="row"><span>Salário Líquido</span><b>${f(liq)}</b></div>
-            `;
+<div class="info">
+<span>⏰ Valor Hora</span>
+<strong>${f(v)}</strong>
+</div>
 
-            document
-                .querySelectorAll("input,select")
-                .forEach(x => x.disabled = true);
+<div class="info">
+<span>📈 Horas Extras 50%</span>
+<strong>${a} h (${f(t50)})</strong>
+</div>
 
-        }
+<div class="info">
+<span>⚡ Horas Extras 100%</span>
+<strong>${b} h (${f(t100)})</strong>
+</div>
+
+<div class="info">
+<span>💵 Total Extras</span>
+<strong>${f(ext)}</strong>
+</div>
+
+<div class="info">
+<span>🧾 INSS</span>
+<strong>${f(ins)}</strong>
+</div>
+
+<div class="info">
+<span>💎 Salário Bruto</span>
+<strong>${f(br)}</strong>
+</div>
+
+<div class="info">
+<span>🏦 Salário Líquido</span>
+<strong style="color:#16a34a;">
+${f(liq)}
+</strong>
+</div>
+
+</div>
+
+`;
 
         function edit() {
 
